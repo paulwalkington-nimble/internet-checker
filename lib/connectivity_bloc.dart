@@ -9,6 +9,7 @@ import 'package:connectivity_plus/connectivity_plus.dart';
 class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
   final Connectivity _connectivity = Connectivity();
   late StreamSubscription<ConnectivityResult> _connectivitySubscription;
+  ConnectivityState lastConnectivityStatus = ConnectivityUnknown();
 
   ConnectivityBloc() : super(ConnectivityUnknown()) {
     _connectivitySubscription = _connectivity.onConnectivityChanged
@@ -30,14 +31,21 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
   }
 
   void emitConnectionStatus(ConnectivityResult connectivity, emit) {
-    if (connectivity == ConnectivityResult.none) {
-      emit(ConnectivityNone());
-    } else if (connectivity == ConnectivityResult.wifi ||
+    ConnectivityState currentConnectivityStatus;
+
+    if (connectivity == ConnectivityResult.wifi ||
         connectivity == ConnectivityResult.mobile) {
-      emit(ConnectivityAvaliable());
+      if (lastConnectivityStatus == ConnectivityNone()) {
+        currentConnectivityStatus = ConnectivityRestored();
+      } else {
+        currentConnectivityStatus = ConnectivityAvaliable();
+      }
     } else {
-      emit(ConnectivityNone());
+      currentConnectivityStatus = ConnectivityNone();
     }
+
+    emit(currentConnectivityStatus);
+    lastConnectivityStatus = currentConnectivityStatus;
   }
 
   @override

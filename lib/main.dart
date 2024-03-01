@@ -35,8 +35,6 @@ class _MyHomePageState extends State<MyHomePage> {
   var appBarColour = Colors.blue;
   var appBarTitle = 'Internet Checker';
 
-  var isInternetAvailable = true;
-
   final List<Widget> _pages = [
     PageOne(),
     PageTwo(),
@@ -53,18 +51,16 @@ class _MyHomePageState extends State<MyHomePage> {
     if (state is ConnectivityNone) {
       appBarColour = Colors.red;
       appBarTitle = "Connection Lost";
-      isInternetAvailable = false;
     }
 
     if (state is ConnectivityAvaliable) {
-      if (isInternetAvailable == false) {
-        appBarColour = Colors.green;
-        appBarTitle = "Connection Restored";
-      } else {
-        appBarColour = Colors.blue;
-        appBarTitle = "Internet Checker";
-      }
-      isInternetAvailable = true;
+      appBarColour = Colors.blue;
+      appBarTitle = "Internet Checker";
+    }
+
+    if (state is ConnectivityRestored) {
+      appBarColour = Colors.green;
+      appBarTitle = "Connection Restored";
     }
   }
 
@@ -84,22 +80,24 @@ class _MyHomePageState extends State<MyHomePage> {
           bottomNavigationBar: BottomNavigationBar(
             currentIndex: _currentIndex,
             onTap: (index) {
-              calculateAppBarColour(state);
+              context
+                  .read<ConnectivityBloc>()
+                  .add(ForceConnectivityCheckEvent());
 
               setState(() {
                 _currentIndex = index;
               });
             },
-            items: [
-              const BottomNavigationBarItem(
+            items: const [
+              BottomNavigationBarItem(
                 icon: Icon(Icons.home),
                 label: 'Page 1',
               ),
-              const BottomNavigationBarItem(
+              BottomNavigationBarItem(
                 icon: Icon(Icons.search),
                 label: 'Page 2',
               ),
-              const BottomNavigationBarItem(
+              BottomNavigationBarItem(
                 icon: Icon(Icons.person),
                 label: 'Page 3',
               ),
