@@ -36,13 +36,18 @@ class _MyHomePageState extends State<MyHomePage> {
   var appBarTitle = 'Internet Checker';
 
   var isInternetAvailable = true;
-  var hasCheckedConnectivity = false;
 
   final List<Widget> _pages = [
     PageOne(),
     PageTwo(),
     PageThree(),
   ];
+
+  @override
+  void initState() {
+    super.initState();
+    context.read<ConnectivityBloc>().add(ForceConnectivityCheckEvent());
+  }
 
   void calculateAppBarColour(state) {
     if (state is ConnectivityNone) {
@@ -67,11 +72,6 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return BlocBuilder<ConnectivityBloc, ConnectivityState>(
       builder: (context, state) {
-        if (hasCheckedConnectivity == false) {
-          context.read<ConnectivityBloc>().add(ForceConnectivityCheckEvent());
-          hasCheckedConnectivity = true;
-        }
-
         calculateAppBarColour(state);
 
         return Scaffold(
