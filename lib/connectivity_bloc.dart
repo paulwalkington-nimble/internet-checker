@@ -21,19 +21,15 @@ class ConnectivityBloc extends Bloc<ConnectivityEvent, ConnectivityState> {
 
   void _onConnectivityChanged(ConnectivityChanged event, emit) async {
     final connectivity = event.connectivity;
-    if (connectivity == ConnectivityResult.none) {
-      emit(ConnectivityNone());
-    } else if (connectivity == ConnectivityResult.wifi ||
-        connectivity == ConnectivityResult.mobile) {
-      emit(ConnectivityAvaliable());
-    } else {
-      emit(ConnectivityNone());
-    }
+    emitConnectionStatus(connectivity, emit);
   }
 
   void _checkConnectivityStatus(ForceConnectivityCheckEvent event, emit) async {
     var connectivity = await (Connectivity().checkConnectivity());
+    emitConnectionStatus(connectivity, emit);
+  }
 
+  void emitConnectionStatus(ConnectivityResult connectivity, emit) {
     if (connectivity == ConnectivityResult.none) {
       emit(ConnectivityNone());
     } else if (connectivity == ConnectivityResult.wifi ||
