@@ -1,19 +1,26 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:internet_checker/connectivity_bloc.dart';
-import 'package:internet_checker/connectivity_event.dart';
-import 'package:internet_checker/connectivity_state.dart';
+import 'package:internet_checker/src/domain/api_timer.dart';
+import 'package:internet_checker/src/presentation/bloc/connectivity_bloc.dart';
+import 'package:internet_checker/src/presentation/bloc/connectivity_event.dart';
+import 'package:internet_checker/src/presentation/bloc/connectivity_state.dart';
+import 'package:internet_checker/core/injection_container.dart';
 
-void main() {
+// ConnectivityBloc connectivityBloc = ConnectivityBloc();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await init();
   runApp(MyApp());
+
+  ApiTimer(sl<ConnectivityBloc>()).start();
 }
 
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (BuildContext context) => ConnectivityBloc(),
+      create: (context) => sl<ConnectivityBloc>(),
       child: MaterialApp(
         title: 'Bottom Navigation Bar',
         theme: ThemeData(
@@ -112,8 +119,25 @@ class _MyHomePageState extends State<MyHomePage> {
 class PageOne extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return const Center(
-      child: Text('Page 1'),
+    return Column(
+      children: [
+        const Center(
+          child: Text('Page 1'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            sl<ConnectivityBloc>()
+                .add(const ApiConnectivityChangedEvent(false));
+          },
+          child: const Text('turn of api'),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            sl<ConnectivityBloc>().add(const ApiConnectivityChangedEvent(true));
+          },
+          child: const Text('turn on api'),
+        )
+      ],
     );
   }
 }

@@ -18,3 +18,12 @@ class ConnectivityChanged extends ConnectivityEvent {
 }
 
 class ForceConnectivityCheckEvent extends ConnectivityEvent {}
+
+class ApiConnectivityChangedEvent extends ConnectivityEvent {
+  final bool isApiAvailable;
+
+  const ApiConnectivityChangedEvent(this.isApiAvailable);
+
+  @override
+  List<Object> get props => [isApiAvailable];
+}
